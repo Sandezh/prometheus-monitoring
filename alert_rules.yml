@@ -1,0 +1,11 @@
+groups:
+  - name: website-availability
+    rules:
+      - alert: WebsiteDown
+        expr: probe_success == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Website is down"
+          description: "The target website is not responding to HTTP requests."
