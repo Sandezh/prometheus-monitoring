@@ -1,11 +1,26 @@
 groups:
-  - name: website-availability
-    rules:
-      - alert: WebsiteDown
-        expr: probe_success == 0
-        for: 30s
-        labels:
-          severity: critical
-        annotations:
-          summary: "Website is down"
-          description: "The target website is not responding to HTTP requests."
+- name: website
+  rules:
+  - alert: Website Down
+    expr: probe_success{job="website"} == 0
+    for: 0s
+    labels:
+      severity: critical
+    annotations:
+      description: |
+        🔥 **ALERT**  
+        💣 **Severity**: critical 
+        🌐 **Website**: {{ $labels.instance }}  
+
+- name: system
+  rules:
+  - alert: High CPU Usage
+    expr: (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance)) < 0.1
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: |
+        🔥 **ALERT**: High CPU Usage  
+        💣 **Severity**: critical  
+        🖥️ **Instance**: {{ $labels.instance }}  

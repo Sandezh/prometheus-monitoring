@@ -1,0 +1,5 @@
+{{ define "discord.default.message" }}
+{
+  "content": "{{ if gt (len .Alerts.Firing) 0 }}🔥 **ALERT FIRING** 🔥\n{{ range .Alerts.Firing }}**Alert:** {{ .Labels.alertname }}\n**Severity:** {{ .Labels.severity }}\n**Website:** {{ .Labels.instance }}\n**Description:** {{ .Annotations.description }}\n\n{{ end }}{{ end }}{{ if gt (len .Alerts.Resolved) 0 }}✅ **ALERT RESOLVED** ✅\n{{ range .Alerts.Resolved }}**Alert:** {{ .Labels.alertname }}\n**Website:** {{ .Labels.instance }}\n{{ end }}{{ end }}"
+}
+{{ end }}
