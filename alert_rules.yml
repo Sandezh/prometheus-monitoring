@@ -8,19 +8,51 @@ groups:
       severity: critical
     annotations:
       description: |
-        🔥 **ALERT**  
+        🔥 **ALERT: Website Down**  
         💣 **Severity**: critical 
-        🌐 **Website**: {{ $labels.instance }}  
+        🌐 **Website**: {{ $labels.instance }} is DOWN
+      resolved_description: |
+        ✅ **RESOLVED: Website Up**
+        🌐 **Website**: {{ $labels.instance }} is now UP and running again
 
-- name: system
-  rules:
   - alert: High CPU Usage
-    expr: (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance)) < 0.1
-    for: 5m
+    expr: (avg(rate(node_cpu_seconds_total{mode="idle"}[30s])) by (instance)) < 0.1
+    for: 0s
     labels:
       severity: critical
     annotations:
       description: |
-        🔥 **ALERT**: High CPU Usage  
+        🔥 **ALERT: High CPU Usage**  
         💣 **Severity**: critical  
-        🖥️ **Instance**: {{ $labels.instance }}  
+        🖥️ **Instance**: {{ $labels.instance }} has high CPU utilization
+      resolved_description: |
+        ✅ **RESOLVED: CPU Usage Normal**
+        🖥️ **Instance**: {{ $labels.instance }} CPU usage has returned to normal levels
+
+  - alert: High Memory Usage
+    expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
+    for: 0s
+    labels:
+      severity: warning
+    annotations:
+      description: |
+        🔥 **ALERT: High Memory Usage**  
+        💣 **Severity**: warning  
+        🧠 **Instance**: {{ $labels.instance }} is using more than 90% of its memory
+      resolved_description: |
+        ✅ **RESOLVED: Memory Usage Normal**
+        🧠 **Instance**: {{ $labels.instance }} memory usage is back to normal 
+
+  - alert: Instance Down
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      description: |
+        🚫 **Instance Down**  
+        🔌 **Instance**: {{ $labels.instance }} is unreachable
+      resolved_description: |
+        ✅ **Instance Up**  
+        🔌 **Instance**: {{ $labels.instance }} is back online
+          
