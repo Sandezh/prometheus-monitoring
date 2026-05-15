@@ -14,13 +14,19 @@ receivers:
     - url: 'http://alertmanager-discord:9094'
       send_resolved: true
   slack_configs:
-    - api_url: 'https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK'
+    - api_url_file: '/etc/alertmanager/slack_url'
       channel: '#monitoring'
       send_resolved: true
 
 - name: 'discord'
   webhook_configs:
   - url: 'http://alertmanager-discord:9094'
+    send_resolved: true
+
+- name: 'slack'
+  slack_configs:
+  - api_url_file: '/etc/alertmanager/slack_url'
+    channel: '#monitoring'
     send_resolved: true
 
 templates:

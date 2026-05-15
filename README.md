@@ -6,6 +6,7 @@ A comprehensive, flexible, and production-ready monitoring stack using Prometheu
 
 - **Prometheus**: Core monitoring system for metric collection and storage.
 - **Alertmanager**: Handles alerts sent by Prometheus and routes them to Discord/Slack.
+- **Alertmanager-Discord/Slack**: Lightweight bridges that allow Alertmanager to send notifications using environment variables.
 - **Blackbox Exporter**: Probes endpoints (HTTP, HTTPS, DNS, TCP, ICMP) to monitor availability.
 - **Node Exporter**: Collects hardware and OS metrics from host machines.
 - **cAdvisor**: Provides resource usage and performance characteristics of running containers.

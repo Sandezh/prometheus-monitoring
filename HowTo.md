@@ -43,8 +43,9 @@ The stack uses **File Service Discovery**. You don't need to restart Prometheus 
 ### 2. Slack Alerts
 1.  Create an "Incoming Webhook" in your Slack workspace.
 2.  Copy the URL.
-3.  Open [alertmanager.yml](file:///c:/Users/DELL/Desktop/prometheus/alertmanager.yml) and update the `api_url` under `slack_configs`.
-    *Note: Alertmanager does not natively support .env variables for its config, so this must be edited directly.*
+3.  Paste it into the `SLACK_WEBHOOK` variable in your [.env](file:///c:/Users/DELL/Desktop/prometheus/.env) file.
+4.  Restart the stack: `docker-compose up -d`.
+    *The system automatically handles the Slack configuration using the environment variable from your .env file.*
 
 ---
 
