@@ -1,6 +1,6 @@
 # Prometheus Monitoring Stack
 
-A comprehensive, flexible, and production-ready monitoring stack using Prometheus, Alertmanager, and Grafana. This setup features dynamic service discovery and multi-channel alerting, and is fully compatible for both **AWS** and **local** environment monitoring.
+A comprehensive, flexible, and production-ready monitoring stack using Prometheus, Alertmanager, and Grafana. It supports dynamic service discovery and multi-channel alerting via Discord and Slack, and is fully compatible with both **AWS** and **local** environments.
 
 > 📖 **Looking for detailed setup guides?** Check out the [How-To Guide](HowTo.md) for step-by-step instructions on targets, alerts, and dashboards.
 
