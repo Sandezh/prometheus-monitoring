@@ -36,3 +36,16 @@ scrape_configs:
   - job_name: 'cadvisor'
     static_configs:
       - targets: ['cadvisor:8080']
+
+  # OPTIONAL: AWS EC2 Auto-Discovery
+  # This will automatically find any EC2 instance with the tag 'monitor: true'
+  # - job_name: 'aws-ec2-discovery'
+  #   ec2_sd_configs:
+  #     - region: us-east-1 # Change to your region
+  #       port: 9100        # Assumes node-exporter is on 9100
+  #   relabel_configs:
+  #     - source_labels: [__meta_ec2_tag_monitor]
+  #       regex: 'true'
+  #       action: keep
+  #     - source_labels: [__meta_ec2_private_ip]
+  #       target_label: instance

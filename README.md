@@ -2,6 +2,8 @@
 
 A comprehensive, flexible, and production-ready monitoring stack using Prometheus, Alertmanager, and Grafana. This setup features dynamic service discovery and multi-channel alerting, and is fully compatible for both **AWS** and **local** environment monitoring.
 
+> 📖 **Looking for detailed setup guides?** Check out the [How-To Guide](HowTo.md) for step-by-step instructions on targets, alerts, and dashboards.
+
 ## 🏗️ Architecture
 
 - **Prometheus**: Core monitoring system for metric collection and storage.
@@ -62,8 +64,22 @@ cp targets/targets.example.yml targets/targets.yml
 | **Grafana** | [http://localhost:3001](http://localhost:3001) | Dashboards and visualization |
 | **Blackbox Exporter** | [http://localhost:9115](http://localhost:9115) | Probe status and logs |
 
-## 🛠️ Management
+## 🛠️ Management & Flexibility
 
-- **Add Targets**: Add or edit `.yml` files in the `targets/` directory. Prometheus will pick them up automatically.
-- **Alerts**: Configure Discord and Slack webhooks in the `.env` file and `alertmanager.yml`.
-- **Dashboards**: Grafana is pre-provisioned with dashboards in `grafana/dashboards/`.
+- **Local Monitoring**: Use the `manage-targets.ps1` script to add/list local targets without touching YAML files.
+- **AWS Auto-Discovery**: Automatically discover EC2 instances by tagging them with `monitor: true`. (Requires uncommenting in `prometheus.yml`).
+- **Secret Management**: All sensitive data (Webhooks, Admin passwords) are managed via the `.env` file.
+- **Dynamic Targets**: Add or edit `.yml` files in the `targets/` directory. Prometheus will pick them up automatically within 2 minutes.
+
+---
+
+## 📚 Documentation
+
+For more detailed information, please refer to the following guides:
+
+- **[How-To Guide](HowTo.md)**: Detailed instructions for:
+  - Adding/Removing monitoring targets (Manual & CLI).
+  - Configuring Discord and Slack alerts.
+  - Setting up AWS EC2 Auto-Discovery.
+  - Managing Grafana dashboards.
+  - Troubleshooting and maintenance.

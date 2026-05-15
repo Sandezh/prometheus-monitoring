@@ -1,9 +1,6 @@
-name: Prometheus Monitor 
+name: Prometheus Deployment
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
@@ -18,37 +15,70 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_IP }}
-          username: ec2-user
+          username: ${{ secrets.EC2_USERNAME  }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "local-monitoring/*"
-          target: "/home/ec2-user/prometheus-monitoring"
-          strip_components: 1
+          source: "."
+          target: "/home/${{ secrets.EC2_USERNAME  }}/prometheus-monitoring"
 
       - name: Deploy on EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_IP }}
-          username: ec2-user
+          username: ${{ secrets.EC2_USERNAME  }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ec2-user/prometheus-monitoring
+            cd /home/${{ secrets.EC2_USERNAME  }}/prometheus-monitoring
             
-            # Install Docker if not present (Amazon Linux 2)
+            # Create .env from secrets
+            echo "DISCORD_WEBHOOK=${{ secrets.DISCORD_WEBHOOK }}" > .env
+            echo "SLACK_WEBHOOK=${{ secrets.SLACK_WEBHOOK }}" >> .env
+            echo "GF_ADMIN_USER=${{ secrets.GF_ADMIN_USER }}" >> .env
+            echo "GF_ADMIN_PASSWORD=${{ secrets.GF_ADMIN_PASSWORD }}" >> .env
+
+            # Configure AWS Region in prometheus.yml if secret is set
+            if [ ! -z "${{ secrets.AWS_REGION }}" ]; then
+              sed -i "s/region: us-east-1/region: ${{ secrets.AWS_REGION }}/g" prometheus.yml
+            fi
+
+            # Enable AWS Auto-Discovery if secret ENABLE_AWS_DISCOVERY is 'true'
+            if [ "${{ secrets.ENABLE_AWS_DISCOVERY }}" == "true" ]; then
+              sed -i 's/# - job_name: /  - job_name: /g' prometheus.yml
+              sed -i 's/#   ec2_sd_configs:/    ec2_sd_configs:/g' prometheus.yml
+              sed -i 's/#     - region:/      - region:/g' prometheus.yml
+              sed -i 's/#       port:/        port:/g' prometheus.yml
+              sed -i 's/#   relabel_configs:/    relabel_configs:/g' prometheus.yml
+              sed -i 's/#     - source_labels:/      - source_labels:/g' prometheus.yml
+              sed -i 's/#       regex:/        regex:/g' prometheus.yml
+              sed -i 's/#       action:/        action:/g' prometheus.yml
+              sed -i 's/#     - source_labels:/      - source_labels:/g' prometheus.yml
+              sed -i 's/#       target_label:/        target_label:/g' prometheus.yml
+            fi
+
+            # Create targets.yml from example if it doesn't exist
+            if [ ! -f targets/targets.yml ]; then
+              cp targets/targets.example.yml targets/targets.yml
+            fi
+
+            # Set execution permissions for helper script
+            chmod +x manage-targets.sh
+            
+            # Install Docker if not present (Amazon Linux 2/2023)
             if ! command -v docker &> /dev/null; then
               sudo yum update -y
-              sudo amazon-linux-extras install docker -y
+              sudo yum install -y docker
               sudo service docker start
-              sudo usermod -a -G docker ec2-user
+              sudo usermod -a -G docker ${{ secrets.EC2_USERNAME  }}
             fi
             
-            # Install Docker Compose if not present
-            if ! command -v docker-compose &> /dev/null; then
+            # Ensure docker-compose is available (Docker Compose V2 is recommended)
+            if ! docker compose version &> /dev/null; then
               sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
             fi
 
-            docker-compose down
-            docker-compose up -d
+            # Deploy
+            docker compose down || true
+            docker compose up -d --build
 
       - name: Notify
         run: echo "Prometheus setup and containers deployed on EC2 instance."

@@ -17,10 +17,12 @@ This guide provides detailed instructions for common tasks in the monitoring sta
 
 The stack uses **File Service Discovery**. You don't need to restart Prometheus to add new websites or services.
 
+### 1) Manual Approach (File Management)
+
 1.  Open the `targets/` directory.
 2.  Create a new `.yml` file by copying the example: `cp targets/targets.example.yml targets/targets.yml`.
 3.  Edit [targets.yml](file:///c:/Users/DELL/Desktop/prometheus/targets/targets.yml) or create a new one (e.g., `targets/my-apps.yml`).
-3.  Add your targets in the following format:
+4.  Add your targets in the following format:
     ```yaml
     - targets:
         - https://my-new-site.com
@@ -29,7 +31,42 @@ The stack uses **File Service Discovery**. You don't need to restart Prometheus 
         env: production
         team: backend
     ```
-4.  Prometheus will automatically detect the changes within 2 minutes (configured by `refresh_interval`).
+5.  Prometheus will automatically detect the changes within 2 minutes (configured by `refresh_interval`).
+
+### 2) Automated Approach (CLI & Auto-Discovery)
+
+#### A. Using the Command Line (Local/Manual)
+You can manage targets without opening the YAML file using the provided helper script:
+
+**Windows (PowerShell):**
+```powershell
+# Add a target
+.\manage-targets.ps1 -Action add -URL "https://my-app.com" -Env "production"
+
+# Remove a target
+.\manage-targets.ps1 -Action remove -URL "https://my-app.com" -Env "production"
+
+# List all targets
+.\manage-targets.ps1 -Action list
+```
+
+**Linux/macOS (Bash):**
+```bash
+# Add a target
+./manage-targets.sh add https://my-app.com production
+
+# Remove a target
+./manage-targets.sh remove https://my-app.com production
+
+# List all targets
+./manage-targets.sh list
+```
+
+#### B. Using AWS Auto-Discovery (Fully Dynamic)
+For AWS environments, you can configure Prometheus to automatically discover instances based on tags. This eliminates the need to manually manage IP addresses or URLs.
+
+- **How it works**: Prometheus queries the AWS API and **only monitors** instances that have the tag `monitor: true`.
+- **Setup**: Uncomment the `aws-ec2-discovery` section in [prometheus.yml](file:///c:/Users/DELL/Desktop/prometheus/prometheus.yml) and ensure your EC2 instance has the `AmazonEC2ReadOnlyAccess` IAM policy.
 
 ---
 
