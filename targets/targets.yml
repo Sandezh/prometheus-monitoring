@@ -1,5 +1,0 @@
-- targets:
-    - http://host.docker.internal:3000/
-    - https://localhost:3000/
-  labels:
-    env: production
