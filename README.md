@@ -18,9 +18,10 @@ A comprehensive, flexible, and production-ready monitoring stack using Prometheu
 - Docker and Docker Compose installed.
 
 ### 2. Configuration
-Copy the template environment file and fill in your actual values (webhooks, credentials):
+Copy the template files and fill in your actual values (webhooks, credentials, targets):
 ```bash
 cp .env.example .env
+cp targets/targets.example.yml targets/targets.yml
 ```
 
 ## 🏁 Step-by-Step Setup

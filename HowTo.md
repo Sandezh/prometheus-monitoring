@@ -18,7 +18,8 @@ This guide provides detailed instructions for common tasks in the monitoring sta
 The stack uses **File Service Discovery**. You don't need to restart Prometheus to add new websites or services.
 
 1.  Open the `targets/` directory.
-2.  Create a new `.yml` file (e.g., `targets/my-apps.yml`) or edit [targets.yml](file:///c:/Users/DELL/Desktop/prometheus/targets/targets.yml).
+2.  Create a new `.yml` file by copying the example: `cp targets/targets.example.yml targets/targets.yml`.
+3.  Edit [targets.yml](file:///c:/Users/DELL/Desktop/prometheus/targets/targets.yml) or create a new one (e.g., `targets/my-apps.yml`).
 3.  Add your targets in the following format:
     ```yaml
     - targets:

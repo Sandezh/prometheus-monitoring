@@ -1,6 +1,9 @@
 # Environment variables
 .env
 
+# Monitoring targets
+targets/targets.yml
+
 # Prometheus data
 data/
 
