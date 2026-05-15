@@ -10,6 +10,8 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
       - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   alertmanager:
     image: prom/alertmanager:latest
@@ -30,6 +32,7 @@ services:
     image: benjojo/alertmanager-discord:latest
     environment:
       - DISCORD_WEBHOOK=https://discord.com/api/webhooks/1362327885741953115/Iu6WNZaobx468Bub2StlFXNrHozG9P6coL1Mi5zeHYxVibHKDn73Qh_QlqpsmGtWNE5s
+      - SLACK_WEBHOOK=https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
     ports:
       - "9094:9094"
 
@@ -60,7 +63,22 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     ports:
-      - "9100:9100"    
+      - "9100:9100"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    restart: unless-stopped
 
 volumes:
   grafana-storage:    

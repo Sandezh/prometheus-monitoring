@@ -17,7 +17,7 @@ groups:
 
   - alert: High CPU Usage
     expr: (avg(rate(node_cpu_seconds_total{mode="idle"}[30s])) by (instance)) < 0.1
-    for: 0s
+    for: 5m
     labels:
       severity: critical
     annotations:
@@ -31,7 +31,7 @@ groups:
 
   - alert: High Memory Usage
     expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
-    for: 0s
+    for: 5m
     labels:
       severity: warning
     annotations:
@@ -42,6 +42,48 @@ groups:
       resolved_description: |
         ✅ **RESOLVED: Memory Usage Normal**
         🧠 **Instance**: {{ $labels.instance }} memory usage is back to normal 
+
+  - alert: High Disk Usage
+    expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} > 0.85
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      description: |
+        🔥 **ALERT: High Disk Usage**  
+        💣 **Severity**: critical  
+        💾 **Instance**: {{ $labels.instance }} disk usage is above 85%
+      resolved_description: |
+        ✅ **RESOLVED: Disk Usage Normal**
+        💾 **Instance**: {{ $labels.instance }} disk usage is back to normal
+
+  - alert: Container Memory High
+    expr: container_memory_usage_bytes{name!=""} / container_spec_memory_limit_bytes{name!=""} > 0.8
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      description: |
+        🔥 **ALERT: Container Memory High**  
+        💣 **Severity**: warning  
+        📦 **Container**: {{ $labels.name }} is using more than 80% of its memory limit
+      resolved_description: |
+        ✅ **RESOLVED: Container Memory Normal**
+        📦 **Container**: {{ $labels.name }} memory usage is back to normal
+
+  - alert: Container Restarting
+    expr: count_over_time(container_last_seen{name!=""}[15m]) < 10
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      description: |
+        🔥 **ALERT: Container Restarting**  
+        💣 **Severity**: warning  
+        📦 **Container**: {{ $labels.name }} seems to be restarting frequently
+      resolved_description: |
+        ✅ **RESOLVED: Container Stable**
+        📦 **Container**: {{ $labels.name }} is stable now
 
   - alert: Instance Down
     expr: up == 0

@@ -1,6 +1,6 @@
 global:
-  scrape_interval: 5s
-  evaluation_interval: 5s
+  scrape_interval: 15s
+  evaluation_interval: 15s
 
 alerting:
   alertmanagers:
@@ -19,6 +19,7 @@ scrape_configs:
     static_configs:
       - targets:
         - http://host.docker.internal:3000/
+        - https://your-staging-site.com
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -26,6 +27,11 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: blackbox-exporter:9115
+
   - job_name: 'node'
     static_configs:
-      - targets: ['node-exporter:9100']      
+      - targets: ['node-exporter:9100']
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
