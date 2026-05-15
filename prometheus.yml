@@ -16,10 +16,11 @@ scrape_configs:
     metrics_path: /probe
     params:
       module: [http_2xx] 
-    static_configs:
-      - targets:
-        - http://host.docker.internal:3000/
-        - https://your-staging-site.com
+    file_sd_configs:
+      - files:
+        - 'targets/*.yml'
+        - 'targets/*.json'
+        refresh_interval: 2m
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target

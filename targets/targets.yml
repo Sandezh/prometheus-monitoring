@@ -1,0 +1,5 @@
+- targets:
+    - http://host.docker.internal:3000/
+    - https://your-staging-site.com
+  labels:
+    env: production
